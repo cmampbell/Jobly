@@ -26,4 +26,5 @@ describe('sqlForPartialUpdate unit tests', function() {
     test('Does sqlForPartialUpdate return an error with invalid input', function() {
         expect(() => sqlForPartialUpdate({}, {})).toThrow;
     })
+
 })
