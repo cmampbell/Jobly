@@ -60,6 +60,25 @@ router.get("/", ensureAdmin, async function (req, res, next) {
   }
 });
 
+/** POST /[username]/jobs/[id] { username, id } => { applied: id }
+ *
+ * Associates a user with a job posting
+ *
+ * Authorization required: admin or same user
+ **/
+
+router.post("/:username/jobs/:id", [ensureLoggedIn, ensureSameUserOrAdmin], async function (req, res, next) {
+  try {
+    const { username, id } = req.params;
+    if (!+id && +id !== 0) throw new BadRequestError('Invalid job id')
+    const jobApp = await User.createJobApplication(username, id)
+    return res.json(jobApp)
+  } catch (err) {
+    console.log(err)
+    return next(err);
+  }
+})
+
 
 /** GET /[username] => { user }
  *

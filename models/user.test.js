@@ -7,6 +7,7 @@ const {
 } = require("../expressError");
 const db = require("../db.js");
 const User = require("./user.js");
+const Job = require("./job.js")
 const {
   commonBeforeAll,
   commonBeforeEach,
@@ -14,7 +15,12 @@ const {
   commonAfterAll,
 } = require("./_testCommon");
 
-beforeAll(commonBeforeAll);
+let testJob;
+beforeAll(async () => {
+  await commonBeforeAll();
+  const result = await Job.findAll();
+  testJob = result[0]
+});
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
@@ -215,7 +221,7 @@ describe("remove", function () {
   test("works", async function () {
     await User.remove("u1");
     const res = await db.query(
-        "SELECT * FROM users WHERE username='u1'");
+      "SELECT * FROM users WHERE username='u1'");
     expect(res.rows.length).toEqual(0);
   });
 
@@ -228,3 +234,37 @@ describe("remove", function () {
     }
   });
 });
+
+/*************************************create application */
+
+describe("create application for job", function () {
+  test("works", async function () {
+    const username = 'u1'
+    const jobApp = await User.createJobApplication(username, testJob.id)
+
+    expect(jobApp).toEqual({ applied: testJob.id })
+
+    const application = await db.query(`
+                SELECT username, job_id AS id FROM applications
+                WHERE username = $1 AND job_id=$2`, [username, testJob.id])
+
+    expect(application.rows[0].id).toEqual(jobApp.applied)
+
+  })
+
+  test("doesn't work with invalid username", async function () {
+    try {
+      await User.createJobApplication('dingus', testJob.id)
+    } catch (err) {
+      console.log(err)
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  })
+  test("doesn't work with invalid job id", async function () {
+    try {
+      await User.createJobApplication('u1', 0)
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  })
+})

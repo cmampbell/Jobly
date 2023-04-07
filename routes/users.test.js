@@ -5,6 +5,7 @@ const request = require("supertest");
 const db = require("../db.js");
 const app = require("../app");
 const User = require("../models/user");
+const Job = require("../models/job.js")
 
 const {
   commonBeforeAll,
@@ -16,7 +17,12 @@ const {
   a1Token,
 } = require("./_testCommon");
 
-beforeAll(commonBeforeAll);
+let testJob;
+beforeAll(async () => {
+  await commonBeforeAll();
+  const jobs = await Job.findAll();
+  testJob = jobs[0];
+});
 beforeEach(commonBeforeEach);
 afterEach(commonAfterEach);
 afterAll(commonAfterAll);
@@ -388,3 +394,60 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+
+
+/*******************************POST /users/:username/jobs/:id */
+
+describe("POST /users/:username/jobs/:id", function () {
+  test("works for admin", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${testJob.id}`)
+      .set("authorization", `Bearer ${a1Token}`);
+
+    expect(resp.body).toEqual({applied: testJob.id})
+  })
+
+  test("works for same user", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/${testJob.id}`)
+      .set("authorization", `Bearer ${u1Token}`);
+
+    expect(resp.body).toEqual({applied: testJob.id})
+  })
+
+  test("unauth for different user", async function () {
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${testJob.id}`)
+      .set("authorization", `Bearer ${u1Token}`);
+
+      expect(resp.statusCode).toEqual(401);
+  })
+
+  test("unauth for anon", async function() {
+    const resp = await request(app)
+      .post(`/users/u2/jobs/${testJob.id}`)
+
+      expect(resp.statusCode).toEqual(401);
+  })
+
+  test("returns 404 for invalid username", async function () {
+    const resp = await request(app)
+      .post(`/users/nope/jobs/${testJob.id}`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.statusCode).toEqual(404);
+  })
+
+  test("returns 404 for invalid job id", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/0`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.statusCode).toEqual(404);
+  })
+
+  test("returns 400 if id can not be parsed to int", async function () {
+    const resp = await request(app)
+      .post(`/users/u1/jobs/trick`)
+      .set("authorization", `Bearer ${a1Token}`);
+    expect(resp.statusCode).toEqual(400);
+  })
+})
