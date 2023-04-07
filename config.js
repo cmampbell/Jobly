@@ -22,6 +22,9 @@ function getDatabaseUri() {
 const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
 
 console.log("Jobly Config:".green);
+console.log("DATABASE_USERNAME: ".red, process.env.DB_USERNAME)
+console.log("DATABASE_Password: ".red, process.env.DB_PASSWORD)
+console.log("DATABASE_HOST: ".red, process.env.DB_HOST)
 console.log("SECRET_KEY:".yellow, SECRET_KEY);
 console.log("PORT:".yellow, PORT.toString());
 console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);

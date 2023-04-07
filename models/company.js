@@ -61,6 +61,10 @@ class Company {
     return companiesRes.rows;
   }
 
+   /** Find companies that meet criteria from data (query string).
+   *
+   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * */
   static async findFiltered(data) {
 
     if (data.minEmployees > data.maxEmployees) throw new BadRequestError('minEmployees can not be larger than maxEmployees')

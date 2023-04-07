@@ -87,6 +87,65 @@ describe("findAll", function () {
   });
 });
 
+describe("findAllFiltered", function() {
+  test("works", async function () {
+    const data = {'name': 'c1', 'minEmployees': 1, 'maxEmployees': 3}
+
+    let companies = await Company.findFiltered(data);
+
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      }
+    ]);
+  })
+
+  test("returns multiple if possible", async function () {
+    const data = {'maxEmployees': 3}
+
+    let companies = await Company.findFiltered(data);
+
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  })
+
+  test("Returns bad request error if min > max", async function () {
+    const data = {'name': 'c1', 'minEmployees': 3, 'maxEmployees': 1}
+
+    try {
+      await Company.findFiltered(data);
+      fail();
+    } catch (err) {
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  })
+})
+
 /************************************** get */
 
 describe("get", function () {
