@@ -61,10 +61,10 @@ class Company {
     return companiesRes.rows;
   }
 
-   /** Find companies that meet criteria from data (query string).
-   *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
-   * */
+  /** Find companies that meet criteria from data (query string).
+  *
+  * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+  * */
   static async findFiltered(data) {
 
     if (data.minEmployees > data.maxEmployees) throw new BadRequestError('minEmployees can not be larger than maxEmployees')
@@ -115,7 +115,14 @@ class Company {
            WHERE handle = $1`,
       [handle]);
 
+    const jobRes = await db.query(
+      `SELECT id, title, salary, equity, company_handle AS "companyHandle"
+      FROM jobs
+      WHERE company_handle = $1`, [handle]
+    );
+
     const company = companyRes.rows[0];
+    if (jobRes.rows.length > 0) company.jobs = jobRes.rows;
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
 
