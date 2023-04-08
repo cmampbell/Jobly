@@ -35,6 +35,11 @@ async function commonBeforeAll() {
          ('Job2', 2, .002, 'c1'),
          ('Job3', 3, .003, 'c2')
   `)
+
+  const job = await db.query(`SELECT id FROM jobs WHERE title = 'Job3'`)
+  await db.query(`
+  INSERT INTO applications(username, job_id)
+  VALUES ('u1', $1)`, [job.rows[0].id])
 }
 
 async function commonBeforeEach() {

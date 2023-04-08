@@ -84,11 +84,13 @@ async function commonBeforeAll() {
     companyHandle: 'c1'
   })
 
-  await Job.create({
+  const job = await Job.create({
     title: 'Job3',
     salary: 3,
     companyHandle: 'c2'
   })
+
+  await User.createJobApplication('u1', job.id)
 }
 
 async function commonBeforeEach() {

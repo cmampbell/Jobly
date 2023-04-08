@@ -132,12 +132,19 @@ class User {
                   is_admin AS "isAdmin"
            FROM users
            WHERE username = $1`,
-      [username],
-    );
+      [username])
 
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const jobsRes = await db.query(
+      `SELECT id, title, company_handle AS "companyHandle" FROM jobs
+        JOIN applications ON jobs.id = applications.job_id  
+        WHERE applications.username = $1`, [username]
+    )
+
+    user.jobs = jobsRes.rows.map(job => job.id)
 
     return user;
   }

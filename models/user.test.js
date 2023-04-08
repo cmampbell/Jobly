@@ -146,6 +146,7 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: false,
+      jobs: [expect.any(Number)]
     });
   });
 
@@ -256,7 +257,6 @@ describe("create application for job", function () {
     try {
       await User.createJobApplication('dingus', testJob.id)
     } catch (err) {
-      console.log(err)
       expect(err instanceof NotFoundError).toBeTruthy();
     }
   })
