@@ -212,9 +212,17 @@ class User {
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 
-  static async createJobApplication(username, jobID) {
+  /** Create a job application for user
+   *
+   * Creates a row in applications many to many table
+   * using username and jobID.
+   * 
+   * Returns { applied: jobID }
+   *
+   * Throws BadRequestError on duplicates.
+   **/
 
-    //take username, take jobID and insert into applications table, returning username and jobID
+  static async createJobApplication(username, jobID) {
 
     const usernameCheck = await db.query(
       `SELECT username
@@ -232,7 +240,6 @@ class User {
     );
 
     if (jobIDCheck.rows.length === 0) throw new NotFoundError('Invalid job id')
-
 
     const jobApp = await db.query(`
         INSERT INTO applications (username, job_id)

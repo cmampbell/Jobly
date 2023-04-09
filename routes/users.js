@@ -62,7 +62,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 
 /** POST /[username]/jobs/[id] { username, id } => { applied: id }
  *
- * Associates a user with a job posting
+ * Associates a user with a job posting, creating an application
  *
  * Authorization required: admin or same user
  **/
@@ -74,7 +74,6 @@ router.post("/:username/jobs/:id", [ensureLoggedIn, ensureSameUserOrAdmin], asyn
     const jobApp = await User.createJobApplication(username, id)
     return res.json(jobApp)
   } catch (err) {
-    console.log(err)
     return next(err);
   }
 })

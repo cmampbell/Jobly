@@ -1,7 +1,7 @@
 "use strict";
 
 const db = require("../db");
-const { BadRequestError, NotFoundError } = require("../expressError");
+const { NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
 
 /** Related functions for jobs. */
@@ -47,6 +47,13 @@ class Job {
            ORDER BY id`);
     return jobsRes.rows;
   }
+
+  /** Find jobs that meet search criteria.
+  * 
+  * Can search by minSalary, hasEquity, or title
+  *
+  * Returns [{ id, title, salary, equity, companyHandle }, ...]
+  * */
 
   static async findFiltered(data) {
 

@@ -55,7 +55,8 @@ function ensureAdmin(req, res, next) {
   }
 }
 
-/** Middleware to use when user must same user from req.params.
+/** Middleware to use when logged in username must equal 
+ * username from request.params, or user must be admin to access.
  *
  * If not, raises Unauthorized.
  */

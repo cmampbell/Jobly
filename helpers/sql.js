@@ -3,7 +3,7 @@ const { BadRequestError } = require("../expressError");
 /** Helper: Translate JavaScript data in to SQL Query.
  *
  * Takes two objects. dataToUpdate contains the values to save in our database. 
- * jsToSQL contains JavaScript keys with their SQL column counterparts as values.
+ * jsToSQL translates keys from dataToUpdate into their SQL column counterparts.
  * 
  * No data to update returns an error.
  * 
@@ -11,9 +11,8 @@ const { BadRequestError } = require("../expressError");
  * 
  * ex: {firstName: 'first_name', lastName:'last_name' } => ['"first_name" = $1', '"last_name" = $2']
  * 
- * Returns an object with two key-value pairs, setCols is equal to the joined string from cols, creating
- * a string we can put after our SET commands in SQL, and matching variable values in the values properties.
- * Allowing us to use setCols and values in tandem to create custom SQL queries based on input provided
+ * Returns an object with two key-value pairs, setCols is a string we can use in
+ * our SQL SET statements, and values contains the values for the columns.
  * 
  * ex return { setCols: '"first_name" = $1', '"last_name" = $2',
  *             values: ['Aliya', 'Morris'] }

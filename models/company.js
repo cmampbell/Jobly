@@ -83,7 +83,7 @@ class Company {
       }
     })
 
-    // query with our filters joined, we include all given filters from query as our variables
+    // query of joined WHERE conditions, we include all given filters from query as our variables
     const companiesRes = await db.query(
       `SELECT handle, name, description, num_employees AS "numEmployees", logo_url AS "logoUrl"
       FROM companies
